@@ -1,10 +1,11 @@
 #!/bin/bash --norc
 
 # TODO: line-continuation
-# TODO: scoping
 # TODO: exporting
 # TODO: job control: <https://www.gnu.org/software/bash/manual/html_node/Job-Control-Basics.html>
 # TODO: shell settings, `set` `shopt`
+# TODO: getopts
+# TODO: expanding indirect array
 
 # `#` as first character of a word (see below) comments rest of line.
 # The first line of this file was a comment too, but is also a shebang, a unix
