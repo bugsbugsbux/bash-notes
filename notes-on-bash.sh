@@ -141,10 +141,10 @@ printf '%s\n' "${name[@]}"
 # - syntax:
 #   `if COMMANDS; then COMMANDS; [ elif COMMANDS; then COMMANDS; ]... [ else COMMANDS; ] fi`
 if false
-then echo if branch is required
+then echo "if branch is required"
 elif false
-then echo elif branch is optional
-else echo else branch is optional
+then echo "elif branch is optional"
+else echo "else branch is optional"
 fi
 
 # Tests: use `help test` and `help [[`
