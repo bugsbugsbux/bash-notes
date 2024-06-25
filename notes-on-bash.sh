@@ -421,10 +421,43 @@ echo hello world > >(rev)
 echo hello | tee >(rev >/tmp/demo) | cat
 cat /tmp/demo
 
-# Functions:
-# - subshells, brace surrounded expressions, arithmetic expressions, [[ expressions, loops
-#   and conditional are so called compound-expressions
+# Functions, Compound expressions, Scopes/Namespaces:
+# - compound expressions are: subshells, brace surrounded expressions, arithmetic expressions,
+#   [[ expressions, loops and conditional
 # - syntax:
-#   + `function name compound` the name may be followed by `()`
-#   + `name () compound` with optional redirections appended
-#
+#   + `function NAME COMPOUND` the name may be followed by `()`
+#   + OR: `NAME () COMPOUND`
+#   + redirections directly following a function definition become part of the definition
+# - only subshells create a new scope/namespace, all other compound expressions use the surrounding
+#   namespace except for:
+#   + the argument-variables ($1, $2, ..., $*, $@, $#) which always reference the arguments of the
+#     current function
+#     Note: $0 does not hold the name of the current function!
+#   + variables after being declared as local using the `local` builtin instead of `declare`
+#     Note: `local` allows the same options as `declare`
+# - `return` exits the current function with the given (or 0) exit code
+# - a variable and a function with the same name can exist at the same time
+declare name=outside
+error123 () {
+    echo not the function name: $0
+    echo first arg: $1
+    name=inside         # modifies outside name because {}-body shares surrounding namespace
+    local name="lol"    # using `local` shadows the outside name
+    echo $name
+    return 123          # set return status and exit function
+} >&2                   # redirect stdout to stderr
+declare -f error123     # shows that the redirection is part of the definition
+error123 message >/tmp/demo_stdout 2>/tmp/demo_stderr
+echo $?                 # successfully failed with code 123
+cat /tmp/demo_stdout    # empty since all output went to stderr
+cat /tmp/demo_stderr    # contains even what originally went to stdout
+echo $foo               # not available anymore
+unset error123          # remove function
+# using a subshell as body:
+unset name; function f ( name="contained to subshell"; );
+f; echo ${name-name not set}
+# function names are not variable names:
+declare name=variable; function name () { echo "i'm not a $1"; }
+declare -p name
+declare -f name
+name $name
