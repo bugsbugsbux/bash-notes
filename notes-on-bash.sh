@@ -25,23 +25,17 @@
 # - variable: named parameter, as opposed to numbered or special-char-addressed
 # - attribute: meta info about a parameter influencing its behaviour, can be set with `declare`
 
-# Basic syntax, arguments:
-echo optional arguments
-name=                   # set name to null (which is a valid value!)
-name="my value"         # variable assignment (do NOT put spaces around `=`)
-# `set --` fakes the args of the current script
-set -- foo $name bar    # unquoted: same as `set -- foo my value bar`
-echo $#                 # get number of args: 4
-echo $1                 # get first arg
-echo $2                 # get second arg
-echo ${10}              # nth arg >9 must be specified in braces. missing args default to empty
-set -- foo "$name" bar  # double-quoted: same as `set -- foo "my value" bar`
-echo $#                 # get number of args: 3
-echo $2
-printf '%s\n' "$*"      # args as single string
-printf '%s\n' "$@"      # args as list of its elements
-printf '%s\n' $@        # element boundaries not preserved (missing quotes)
-echo not '$name'        # single-quoted: prevents expansion
+# Basic syntax:
+echo optional arguments     # `echo` prints the arguments and a final newline to the screen
+echo                        # calls `echo` without arguments; this only prints a newline
+printf '%s\n' a b c d e     # printf's first arg specifies how to combine the rest: each on own line
+printf '%s\n' "a b" c 'd e' # quotes mark argument boundaries when surrounded by whitespace
+printf '%s\n' not" 3"' args'
+name=                       # set variable name to null (which is a valid value!)
+name="my value"             # do NOT put spaces around `=`
+printf '%s\n' $name         # expand=use variable; equivalent to `printf '%s\n' my value`
+printf '%s\n' "$name"       # expansion in string; equivalent to `printf '%s\n' "my value"`
+printf '%s\n' '$name'       # prevents expansion;  equivalent to `printf '%s\n' '$name'`
 
 # Types of commands (check with command `type`):
 # - file
@@ -75,6 +69,19 @@ declare -f name # print definition of a function
 # Using local definitions on remote:
 # - this prepends "code" with the definitions of given variables and functions
 # ssh remote "$(declare -p vars; declare -f funcs;) code"
+
+# Accessing arguments (of current function or, when not in a function, of the script):
+# - `set --` fakes which arguments the current script was called with
+set -- a b c d e f "g h i" j k l
+#
+echo $#                 # get number of args: 2
+echo "$1, $3"           # uses first and third arg
+echo $10 ${10}          # nth arg >9 must be specified in braces
+echo ">${100}<"         # missing args default to empty
+printf '%s\n' "$*"      # `*` gives elements as a single string
+printf '%s\n' "$@"      # `@` gives each element, preserving their boundaries when quoted...
+printf '%s\n' $@        # ...but not when unquoted
+printf '%s\n' '$@'      # obviously single quotes prevent the expansion entirely
 
 # Exit/return status/code:
 # Every command returns an exit code between (incl) 0 and 255 where:
