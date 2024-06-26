@@ -95,8 +95,8 @@ declare -p name # print definition of a variable (not function)
 declare -f name # print definition of a function
 
 # Using local definitions on remote:
-# - this prepends "code" with the definitions of given variables and functions
-# ssh remote "$(declare -p vars; declare -f funcs;) code"
+# - this prepends "code" with the definitions of given variables and functions:
+#   `ssh remote "$(declare -p vars; declare -f funcs;) code"`
 
 # Accessing arguments (of current function or, when not in a function, of the script):
 # - `set --` fakes which arguments the current script was called with
