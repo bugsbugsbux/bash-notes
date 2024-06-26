@@ -37,6 +37,34 @@ printf '%s\n' $name         # expand=use variable; equivalent to `printf '%s\n' 
 printf '%s\n' "$name"       # expansion in string; equivalent to `printf '%s\n' "my value"`
 printf '%s\n' '$name'       # prevents expansion;  equivalent to `printf '%s\n' '$name'`
 
+# Advanced topics on variables:
+# - see also: arrays, associative arrays, scopes/namespaces
+# - builtins `declare` and `local` create new variables with given attributes in respective scope
+# - `printf -v name ...` assigns to the given name instead of printing to stdout
+# - `declare -n pointer=target` creates a new pointer variable (has attribute `n`) which redirects
+#    all actions to the target, thus assigning to a pointer modifies the target
+# - `unset` removes the given variables, and their targets if they are pointers (has attribute `n`)
+# - `unset -n pointer` removes a pointer but not it's target
+# - `local -I name` creates a local copy of name from the outer scope
+unset name pointer target
+#
+declare name=orig target=name               # not a real pointer because it doesn't have attribute n
+printf -v "$target" '%s' "hello world"      # write to variable
+echo "$target;$name;"
+unset target                                # as this isn't a real pointer, only unsets `pointer`
+echo "$target;$name;"
+#
+name=orig; declare -n pointer=name          # creates real pointer which behaves like the target
+echo "$pointer;$name;"
+pointer=new
+echo "$pointer;$name;"
+unset pointer                               # removes both: pointer and its target `name`
+echo "$pointer;$name;"
+#
+name=orig; declare -n pointer=name
+unset -n pointer                            # only removes pointer but not it's target
+echo "$pointer;$name;"
+
 # Types of commands (check with command `type`):
 # - file
 # - keyword
