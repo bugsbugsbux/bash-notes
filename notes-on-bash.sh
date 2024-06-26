@@ -20,7 +20,7 @@
 # Terminology:
 # - word: char-sequence considered a single unit
 # - list: 1+ commands or pipelines
-# - name: words matching ^[[:alpha:]_]+[[:alnum:]_]*$
+# - name: words matching ^[[:alpha:]_]+[[:alnum:]_]*$ but not just a single underscore
 # - parameter: stores a value; see: variable
 # - variable: named parameter, as opposed to numbered or special-char-addressed
 # - attribute: meta info about a parameter influencing its behaviour, can be set with `declare`
