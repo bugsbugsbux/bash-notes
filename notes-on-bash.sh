@@ -369,21 +369,26 @@ echo "keys: ${!name[*]}; values: ${name[*]}"
 
 # Arithmetic expressions (hereafter abbreviated to aexpr):
 # - indices of indexed arrays are interpreted as aexprs; see above
-# - parameter expansion is allowed inside aexprs
-# - bare names can be used instead of dollar notation to expand variables
-#   + the difference: if the variable is empty or unset dollar notation yields
-#     empty which may cause an syntax error, while the bare name yields 0
-# - variables are themselves interpreted as aexpr! This leads to them being expanded
-#   recursively until their value is an aexpr which evaluates to a number
 # - for-loops of the form `for (( aexpr ; aexpr ; aexpr )) ; do ...` use aexprs; see below
 # - `$((` + aexp + `))`: gives result
 # -  `((` + aexp + `))`: gives truthiness, determined like so:
 #   + true if comparison, (in)equality is true
 #   + *true if* calculated number is *not 0*
+# - `let 'aexpr'`: evaluates the given aexpr
+# - of multiple aexpr (separated by `,` in `((` or passed as individual args to `let`)
+#   only the last determines the output and overall result
+# - parameter expansion is allowed inside aexprs
+# - bare names can be used instead of dollar notation to expand variables
+#   + the difference: if the variable is empty or unset dollar notation yields
+#     empty which may cause an syntax error, while the bare name yields 0
+# - variables are themselves interpreted as aexpr, leading to them being expanded
+#   recursively until their value is an aexpr which evaluates to a number
+# - follows arithmetic operator precedence (actually the one of C)
+# - floating point numbers are not allowed, factional results are floored!
+# - aexpr do not have their own scope, assignments affect the respective/outer scope
+# - assignemnts can be combined with an operator: `x-=1` is `x=x-1`
 # - `name++` or `name--`: inside aexpr inc-/decrements the value of name after evaluating the aexpr
 # - `++name` or `--name`: like `name++` or `name--` but reassigns name *before* evaluating the aexpr
-# - follows arithmetic operator precedence
-# - floors floating point numbers!
 declare name=foo foo=2 bar
 echo $((name * 1))      # 2
 echo $(("$name" * 1))   # 2
