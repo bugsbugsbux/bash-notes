@@ -38,7 +38,7 @@ printf '%s\n' "$name"       # expansion in string; equivalent to `printf '%s\n' 
 printf '%s\n' '$name'       # prevents expansion;  equivalent to `printf '%s\n' '$name'`
 
 # Advanced topics on variables:
-# - see also: arrays, associative arrays, scopes/namespaces
+# - see also: arrays, associative arrays, scopes/namespaces, arithmetic expressions
 # - builtins `declare` and `local` create new variables with given attributes in respective scope
 # - `printf -v name ...` assigns to the given name instead of printing to stdout
 # - `declare -n pointer=target` creates a new pointer variable (has attribute `n`) which redirects
@@ -369,21 +369,34 @@ echo "keys: ${!name[*]}; values: ${name[*]}"
 
 # Arithmetic expressions (hereafter abbreviated to aexpr):
 # - indices of indexed arrays are interpreted as aexprs; see above
-# - for loops of the form `for (( aexpr ; aexpr ; aexpr )) ; do ...` use aexprs; see below
+# - parameter expansion is allowed inside aexprs
+# - bare names can be used instead of dollar notation to expand variables
+#   + the difference: if the variable is empty or unset dollar notation yields
+#     empty which may cause an syntax error, while the bare name yields 0
+# - variables are themselves interpreted as aexpr! This leads to them being expanded
+#   recursively until their value is an aexpr which evaluates to a number
+# - for-loops of the form `for (( aexpr ; aexpr ; aexpr )) ; do ...` use aexprs; see below
 # - `$((` + aexp + `))`: gives result
 # -  `((` + aexp + `))`: gives truthiness, determined like so:
 #   + true if comparison, (in)equality is true
 #   + *true if* calculated number is *not 0*
 # - `name++` or `name--`: inside aexpr inc-/decrements the value of name after evaluating the aexpr
 # - `++name` or `--name`: like `name++` or `name--` but reassigns name *before* evaluating the aexpr
-# - `++name`,`--name`,`name++` and `name--` initialize unset variables to 0
 # - follows arithmetic operator precedence
 # - floors floating point numbers!
-# - parameter expansion is allowed inside aexprs
+declare name=foo foo=2 bar
+echo $((name * 1))      # 2
+echo $(("$name" * 1))   # 2
+echo $((bar * 1))       # 0
+echo $(("$bar" * 1))    # error: $(( * 1)) is missing left arg of *
+name=bar
+echo $((name * 1))      # 0
+echo $(("$name" * 1))   # 0 # redirection to unset/empty var yields 0
+#
 echo $(( 2+3*4 ))       # mathematical precedence
 echo $(( (2+3)*4 ))     # use parens to influence order
-echo $((10/0))          # division by zero error
-echo $((10/3))          # does not do fractional values
+echo $((11/0))          # division by zero error
+echo $((11/3))          # no floating point values allowed! results are floored
 echo $((2**3))          # power
 echo $((5%2))           # modulo
 name=10; echo $(($name/3))
