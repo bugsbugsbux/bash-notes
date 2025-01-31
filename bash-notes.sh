@@ -6,6 +6,14 @@
 # TODO: shell settings, `set` `shopt`
 # TODO: getopts
 # TODO: expanding indirect array
+# TODO: FIX: simple branching only works if the exit code of the first branch is guaranteed
+# TODO: patterns: inverse character groups can be written with `!` instead of `^`
+# TODO: note the difference between regular and extglob patterns
+# TODO: FIX: patterns: char-range only works with globasciiranges on or while LC_ALL=C;
+# TODO: patterns: how to specify `[` `-` in char-groups
+# TODO: patterns: how to specify more than a single named class in char-group
+# TODO: patterns in [[ are (always) extglob patterns
+# TODO: missing parameter expansion operators: ^ ^^ , ,, @
 
 # `#` as first character of a word (see below) comments rest of line.
 # The first line of this file was a comment too, but is also a shebang, a unix
