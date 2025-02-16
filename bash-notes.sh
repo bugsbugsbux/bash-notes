@@ -362,7 +362,7 @@ echo "${name[@]:8:2}"       # gets <2 elements because there are not enough star
 # - the order is not guaranteed
 # - indices are specified in brackets and *not* interpreted as arithmetic expressions
 # - `declare -A name`: (capital A!) explicitly creates an *associative* array
-# - `name=(k1 v2 k2 v2)` is equivalent to
+# - `name=(k1 v1 k2 v2)` is equivalent to
 #   `name=([k1]=v1 [k2]=v2)`
 # - `+=` operator with string on rhs appends to the original value
 # - `+=` operator with a literal array on rhs modifies the original array
